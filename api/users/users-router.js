@@ -18,9 +18,8 @@ router.get("/", logger, (req, res) => {
   Users.get().then((users) => res.json(users));
 });
 
-router.get("/:id", (req, res) => {
-  // RETURN THE USER OBJECT
-  // this needs a middleware to verify user id
+router.get("/:id", logger, validateUserId, (req, res) => {
+  res.json(req.user);
 });
 
 router.post("/", (req, res) => {
