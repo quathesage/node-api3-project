@@ -46,17 +46,32 @@ router.delete("/:id", logger, validateUserId, (req, res, next) => {
     .catch(next);
 });
 
-router.get("/:id/posts", logger, validateUserId, (req, res) => {
-  Users.getUserPosts(req.params.id).then((post) => {
-    res.json(post);
-  });
+router.get("/:id/posts", logger, validateUserId, (req, res, next) => {
+  Users.getUserPosts(req.params.id)
+    .then((post) => {
+      res.json(post);
+    })
+    .catch(next);
 });
 
-router.post("/:id/posts", (req, res) => {
-  // RETURN THE NEWLY CREATED USER POST
-  // this needs a middleware to verify user id
-  // and another middleware to check that the request body is valid
-});
+router.post(
+  "/:id/posts",
+  logger,
+  validateUserId,
+  validatePost,
+  (req, res, next) => {
+    // RETURN THE NEWLY CREATED USER POST
+    // this needs a middleware to verify user id
+    // and another middleware to check that the request body is valid
+    const postInfo = { ...req.body, user_id: req.user.id };
+
+    Post.insert(postInfo)
+      .then((post) => {
+        res.status(210).json(post);
+      })
+      .catch(next);
+  }
+);
 
 // do not forget to export the router
 module.exports = router;
