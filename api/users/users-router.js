@@ -22,9 +22,12 @@ router.get("/:id", logger, validateUserId, (req, res) => {
   res.json(req.user);
 });
 
-router.post("/", (req, res) => {
-  // RETURN THE NEWLY CREATED USER OBJECT
-  // this needs a middleware to check that the request body is valid
+router.post("/", logger, validateUser, (req, res, next) => {
+  Users.insert(req.body)
+    .then((user) => {
+      res.status(201).json(user);
+    })
+    .catch(next);
 });
 
 router.put("/:id", (req, res) => {
